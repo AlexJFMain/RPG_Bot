@@ -155,6 +155,10 @@ async def on_message(message):
         \n> __Example__: *\"!roll 3 100\"* rolls 3d100\
         \n"
 
+        infoString += "**!template**\
+        \n> __Description__: Returns a template JSON file for D&D Character Sheet.\
+        \n"
+
         await message.channel.send(infoString)
 
         return
@@ -164,7 +168,7 @@ async def on_message(message):
         logMessage("called \'!template\'")
 
         try:
-            await message.channel.send("Character Sheet JSON Template:\n", file=discord.File("chSheets\\template.json"))
+            await message.channel.send("**Character Sheet JSON Template:**\n", file=discord.File("chSheets\\template.json"))
         except Exception as e:
             logError('\'', e, "\' thrown by \'!template\' call")
 
