@@ -1,17 +1,29 @@
 {
    "Details":{
-      "Name":"Insert Name",
+      "Character Name":"Willard P. Fluffbottom",
       "Level":1, 
-      "Class":"Insert Class",
-      "Race":"Insert Race",
-      "Alignment":"Insert Alignment"
+      "Class":"Barbarian",
+      "Race":"Dwarf",
+      "Alignment":"Neutral-Good"
    },
    "Stats":{
+      "Prof Bonus":1,
       "Str":1,
       "Dex":1,
       "Con":1,
       "Int":1,
       "Wis":1,
       "Cha":1
+   },
+   "Saving Throws":["Str", "Con"],
+   "Skills":["Acrobatics", "Nature", "Religion"],
+   "Other":{
+      "HP":15,
+      "AC":1,
+      "Initiative":1,
+      "Speed":30,
+      "Spellcasting Ability":1,
+      "Spell Save DC":1,
+      "Spell Attack Bonus":1
    }
 }
