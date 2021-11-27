@@ -3,11 +3,13 @@ import discord
 import datetime
 import random
 import json
+import math
 
 from pytz import timezone
 from time import sleep
 from colorama import init, Fore, Back, Style
 from dotenv import load_dotenv
+from pathlib import Path
 
 init(convert=True)
 
@@ -87,6 +89,9 @@ def createEmbed(description, username, icon, color, inline, *content):
             logError('\'', e, f"\' thrown by \'createEmbed\' call on data: \'{{{items}}}\'")
     return embed_read
 #-----------------------------------------------------------------
+def getModifier(score):
+    return "+" + str(int(math.floor((score - 10)/2))) if int(math.floor((score - 10)/2)) > 0 else int(math.floor((score - 10)/2))
+#-----------------------------------------------------------------
 ##################################################################
 #-----------------------------------------------------------------
 
@@ -159,6 +164,19 @@ async def on_message(message):
         \n> __Description__: Returns a template JSON file for D&D Character Sheet.\
         \n"
 
+        infoString += "**!getFile**\
+        \n> __Description__: Returns a JSON file for your character sheet. If you do not have one you can use '!setFile' to create one.\
+        \n"
+
+        infoString += "**!setFile**\
+        \n> __Description__: Creates a JSON file for you character sheet, if it already exists this call can be used to overwrite the files contents.\
+        \n> __Example__: *\"!setFile {\"Character Name\":\"Walter\"}\"* overwites file with the content *\"{\"Character Name\":\"Walter\"}\"*\
+        \n"
+
+        infoString += "**!getStats**\
+        \n> __Description__: Retrieves stats from your JSON file.\
+        \n"
+
         await message.channel.send(infoString)
 
         return
@@ -208,6 +226,103 @@ async def on_message(message):
         }
 
         await message.channel.send(embed = createEmbed(f"**Dice Roll** - {quantity}d{sides}", messageAlias, messageDict["messageIcon"], 0xffb957, False, data0, data1))
+
+        return
+    #-----------------------------------------------------------------
+    if message.content.startswith('!getFile'):
+        path = Path(f"chSheets\\charSheetUserID{messageDict['messageID']}.json")
+        exists = path.is_file()
+
+        logMessage("called \'!getFile\'")
+
+        if(exists):
+            logEvent(f"File \'{path}\' retrieved with \'!getFile\'")
+            await message.channel.send(f"Character Sheet JSON for **{messageAlias}**...\n", file=discord.File(path))
+        else:
+            logEvent(f"Attempted retrieval of \'{path}\' via \'!getFile\', file does not exist")
+            await message.channel.send(f"Character Sheet JSON __does not__ exist for **{messageAlias}**...")
+
+        return
+    #-----------------------------------------------------------------
+    if message.content.startswith('!setFile'):
+        path = Path(f"chSheets\\charSheetUserID{messageDict['messageID']}.json")
+        exists = path.is_file()
+        trimmedMsg = message.content[8:]
+
+        logMessage(f"called \'!setFile\' with content \'{trimmedMsg}\'")
+
+        if(not exists):
+            logEvent(f"Current character sheet does not exist, file \'{path}\' has been created")
+            newJSONFile = open(path, "w")
+
+        try:
+            open(path, "w").close()
+            with open(path, "a") as writeFile:
+                for line in trimmedMsg:
+                    writeFile.write(line)
+        except Exception as e:
+            logAlert('\'', e, f"\' thrown by \'!setFile\' call while writing to {path} with message content")
+
+        return
+    #-----------------------------------------------------------------
+    if message.content.startswith('!getStats'):
+        path = Path(f"chSheets\\charSheetUserID{messageDict['messageID']}.json")
+        exists = path.is_file()
+
+        logMessage("called \'!getStats\'")
+
+        if(exists):
+            try:
+                file = open(path, "r")
+                data = json.loads(file.read())
+
+                charName = data["Details"]["Character Name"]
+                charProf = data["Stats"]["Prof Bonus"]
+                charPerc = data["Stats"]["Passive Perception"]
+                charThro = data["Stats"]["Saving Throws"]
+                charSkil = data["Stats"]["Skills"]
+
+                strStat = {
+                    "title": "Strength:",
+                    "description": "%s (%s)"%(data["Stats"]["Str"], getModifier(data["Stats"]["Str"]))
+                }
+                dexStat = {
+                    "title": "Dexterity:",
+                    "description": "%s (%s)"%(data["Stats"]["Dex"], getModifier(data["Stats"]["Dex"]))
+                }
+                conStat = {
+                    "title": "Constitution:",
+                    "description": "%s (%s)"%(data["Stats"]["Con"], getModifier(data["Stats"]["Con"]))
+                }
+                wisStat = {
+                    "title": "Wisdom:",
+                    "description": "%s (%s)"%(data["Stats"]["Wis"], getModifier(data["Stats"]["Wis"]))
+                }
+                intStat = {
+                    "title": "Intelligence:",
+                    "description": "%s (%s)"%(data["Stats"]["Int"], getModifier(data["Stats"]["Int"]))
+                }
+                chaStat = {
+                    "title": "Charisma:",
+                    "description": "%s (%s)"%(data["Stats"]["Cha"], getModifier(data["Stats"]["Cha"]))
+                }
+
+                await message.channel.send(embed = createEmbed(f"**Character Stats:** {charName}\
+                \n\
+                \n**Proficiency Bonus:** {charProf}\
+                \n**Saving Throws:**: {charThro}\
+                \n**Skills:**: {charSkil}\
+                \n**Passive Perception:** {charPerc}\
+                \n",
+                messageAlias, messageDict["messageIcon"], 0x4265ed, False, 
+                strStat, dexStat, conStat, wisStat, intStat, chaStat))
+
+                file.close()
+            except Exception as e:
+                logError('\'', e, f"\' thrown by \'!getStats\' call on {path}")
+                await message.channel.send(f"Could __not__ retrieve stats for **{messageAlias}**...")
+        else:
+            await message.channel.send(f"Could __not__ retrieve stats for **{messageAlias}**...")
 
         return
     #-----------------------------------------------------------------
