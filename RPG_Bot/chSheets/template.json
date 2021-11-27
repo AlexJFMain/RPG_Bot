@@ -1,0 +1,17 @@
+{
+   "Details":{
+      "Name":"Insert Name",
+      "Level":1, 
+      "Class":"Insert Class",
+      "Race":"Insert Race",
+      "Alignment":"Insert Alignment"
+   },
+   "Stats":{
+      "Str":1,
+      "Dex":1,
+      "Con":1,
+      "Int":1,
+      "Wis":1,
+      "Cha":1
+   }
+}
