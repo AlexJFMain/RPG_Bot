@@ -362,6 +362,7 @@ async def on_message(message):
         exists = path.is_file()
         quantity = 1
         type = ""
+        color = 0xfa3c58
 
         try:
             quantity = int(messageArr[1])
@@ -373,12 +374,16 @@ async def on_message(message):
             type = str(messageArr[2])
             if(type == "norm"):
                 type = "Normal Items"
+                color = 0xfa3c58
             elif(type == "mag"):
                 type = "Magic Items"
+                color = 0x59ff93
             else:
                 type = "Normal Items"
+                color = 0xfa3c58
         except Exception as e:
             type = "Normal Items"
+            color = 0xfa3c58
             logError('\'', e, "\' thrown by \'!loot\' call on value \'type\'")
 
         returnString = ""
@@ -388,7 +393,7 @@ async def on_message(message):
                 file = open(path, "r")
                 data = json.loads(file.read())
                 for i in range (1, quantity + 1):
-                    returnString += f"- {data[type][random.randint(1, len(data[type]) - 1)]}\n"
+                    returnString += f"- {data[type][random.randint(0, len(data[type]) - 1)]}\n"
                     sleep(0.01*random.randint(1, 10))
             except Exception as e:
                 logError('\'', e, f"\' thrown by \'!loot\' call")
@@ -398,9 +403,9 @@ async def on_message(message):
             "description": returnString
         }
 
-        logMessage("called \'!loot\'")
+        logMessage(f"called \'!loot\' browsing {len(data[type]) - 1} items")
 
-        await message.channel.send(embed = createEmbed(f"**Loot Retrieved** - {quantity} of type \'{type}\'", messageAlias, messageDict["messageIcon"], 0xffb957, False, returnDict))
+        await message.channel.send(embed = createEmbed(f"**Loot Retrieved** - {quantity} of type \'{type}\'", messageAlias, messageDict["messageIcon"], color, False, returnDict))
 
         return
     #-----------------------------------------------------------------
