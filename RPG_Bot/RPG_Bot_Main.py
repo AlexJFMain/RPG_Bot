@@ -392,8 +392,11 @@ async def on_message(message):
             try:
                 file = open(path, "r")
                 data = json.loads(file.read())
+                choiceArr = []
                 for i in range (1, quantity + 1):
-                    returnString += f"- {data[type][random.randint(0, len(data[type]) - 1)]}\n"
+                    choice = random.randint(0, len(data[type]) - 1)
+                    choiceArr.append(choice)
+                    returnString += f"- {data[type][choice]}\n"
                     sleep(0.01*random.randint(1, 10))
             except Exception as e:
                 logError('\'', e, f"\' thrown by \'!loot\' call")
@@ -403,7 +406,7 @@ async def on_message(message):
             "description": returnString
         }
 
-        logMessage(f"called \'!loot\' browsing {len(data[type]) - 1} items")
+        logMessage(f"called \'!loot\' browsing {len(data[type]) - 1} items with index(es) {choiceArr}")
 
         await message.channel.send(embed = createEmbed(f"**Loot Retrieved** - {quantity} of type \'{type}\'", messageAlias, messageDict["messageIcon"], color, False, returnDict))
 
