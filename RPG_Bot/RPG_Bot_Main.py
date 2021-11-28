@@ -177,17 +177,21 @@ async def on_message(message):
         \n> __Description__: Returns a template JSON file for D&D Character Sheet.\
         \n"
 
-        infoString += "**!getFile**\
-        \n> __Description__: Returns a JSON file for your character sheet. If you do not have one you can use '!setFile' to create one.\
-        \n"
-
         infoString += "**!setFile**\
         \n> __Description__: Creates a JSON file for you character sheet, if it already exists this call can be used to overwrite the files contents.\
         \n> __Example__: *\"!setFile {\"Character Name\":\"Walter\"}\"* overwites file with the content *\"{\"Character Name\":\"Walter\"}\"*\
         \n"
 
+        infoString += "**!getFile**\
+        \n> __Description__: Returns a JSON file for your character sheet. If you do not have one you can use '!setFile' to create one.\
+        \n"
+
         infoString += "**!getStats**\
         \n> __Description__: Retrieves stats from your JSON file.\
+        \n"
+
+        infoString += "**!getSpells**\
+        \n> __Description__: Retrieves spells from your JSON file.\
         \n"
 
         infoString += "\n***DM-ONLY FUNCTIONS***\n"
@@ -349,9 +353,69 @@ async def on_message(message):
         return
     #-----------------------------------------------------------------
     if message.content.startswith('!getSpells'):
+        path = Path(f"chSheets\\charSheetUserID{messageDict['messageID']}.json")
+        exists = path.is_file()
+
         logMessage("called \'!getSpells\'")
 
-        #TODO
+        if(exists):
+            try:
+                file = open(path, "r")
+                data = json.loads(file.read())
+
+                charName = data["Details"]["Character Name"]
+
+                data0 = {
+                    "title": "Cantrips (Inf.):",
+                    "description": data["Spells"]["Cantrips"] 
+                }
+                data1 = {
+                    "title": "Level 1 Spells (%s):"%(data["Spells"]["lvl1 Slots"]),
+                    "description": data["Spells"]["lvl1 Spells"] 
+                }
+                data2 = {
+                    "title": "Level 2 Spells (%s):"%(data["Spells"]["lvl2 Slots"]),
+                    "description": data["Spells"]["lvl2 Spells"] 
+                }
+                data3 = {
+                    "title": "Level 3 Spells (%s):"%(data["Spells"]["lvl3 Slots"]),
+                    "description": data["Spells"]["lvl3 Spells"] 
+                }
+                data4 = {
+                    "title": "Level 4 Spells (%s):"%(data["Spells"]["lvl4 Slots"]),
+                    "description": data["Spells"]["lvl4 Spells"] 
+                }
+                data5 = {
+                    "title": "Level 5 Spells (%s):"%(data["Spells"]["lvl5 Slots"]),
+                    "description": data["Spells"]["lvl5 Spells"] 
+                }
+                data6 = {
+                    "title": "Level 6 Spells (%s):"%(data["Spells"]["lvl6 Slots"]),
+                    "description": data["Spells"]["lvl6 Spells"] 
+                }
+                data7 = {
+                    "title": "Level 7 Spells (%s):"%(data["Spells"]["lvl7 Slots"]),
+                    "description": data["Spells"]["lvl7 Spells"] 
+                }
+                data8 = {
+                    "title": "Level 8 Spells (%s):"%(data["Spells"]["lvl8 Slots"]),
+                    "description": data["Spells"]["lvl8 Spells"] 
+                }
+                data9 = {
+                    "title": "Level 9 Spells (%s):"%(data["Spells"]["lvl9 Slots"]),
+                    "description": data["Spells"]["lvl9 Spells"] 
+                }
+
+                await message.channel.send(embed = createEmbed(f"**Character Spells:** {charName}",
+                messageAlias, messageDict["messageIcon"], 0xe843dd, False, data0, data1, data2, data3,
+                data4, data5, data6, data7, data8, data9))
+
+                file.close()
+            except Exception as e:
+                logError('\'', e, f"\' thrown by \'!getSpells\' call on {path}")
+                await message.channel.send(f"Could __not__ retrieve spells for **{messageAlias}**...")
+        else:
+            await message.channel.send(f"Could __not__ retrieve spells for **{messageAlias}**...")
 
         return
     #-----------------------------------------------------------------
@@ -406,7 +470,10 @@ async def on_message(message):
             "description": returnString
         }
 
-        logMessage(f"called \'!loot\' browsing {len(data[type]) - 1} items with index(es) {choiceArr}")
+        try:
+            logMessage(f"called \'!loot\' browsing {len(data[type]) - 1} items with index(es) {choiceArr}")
+        except Exception as e:
+            logError('\'', e, f"\' thrown by \'!loot\' call")
 
         await message.channel.send(embed = createEmbed(f"**Loot Retrieved** - {quantity} of type \'{type}\'", messageAlias, messageDict["messageIcon"], color, False, returnDict))
 
