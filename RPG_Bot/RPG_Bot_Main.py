@@ -190,7 +190,7 @@ async def on_message(message):
         \n> __Description__: Retrieves stats from your JSON file.\
         \n"
 
-        infoString += "\n***DM ONLY FUNCTIONS***\n"
+        infoString += "\n***DM-ONLY FUNCTIONS***\n"
 
         infoString += "**!loot <quantity> <type>**\
         \n> __Description__: Returns a random list of items, based off your input values. Only use \"Magic Items\" for very special encounters.\
