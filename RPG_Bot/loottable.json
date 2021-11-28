@@ -1,0 +1,18 @@
+{
+	"Magic Items":["Ash Dagger of Petrification", "Potion of Fire Breath", "Grand Alchemist's Poison Vial",
+	"Skull Lantern", "Dwarvish Rune Stone", "Helm of Vermin", "Scroll of Blast", "Amber Scroll",
+	"Fiery Ring of Throri", "Foul Pendant", "Sacred Death Mask", "Elfsbane Mace", "Flail of the Flagellant",
+	"Merwyrm Shield", "Horn of Vaul", "Ancient Dwarven Ale", "Fossilized Black Dragon Egg", "Blade of Kragnos",
+	"Blade of Ruin", "Mortuary Robes", "Ashes of a Liche's Staff", "White Lion's Pelt", "Dwarven Runic Armor",
+	"Vial of Plague", "Ancient Oaks Acorn", "Tomb Axe of Ptra", "Moonbow", "Blade of Serpent's Tongue", 
+	"Star Lance", "Spear of Judgement", "Dart of Doom Tome", "Necromancer's Staff", "Master Warlock's Dagger"],
+	"Normal Items":["Rusty Dagger", "Rusty Sword", "Rusty Mace", "Rusty Helm", "Orcish Club",
+	"Light Crossbow", "5 Hunting Arrows", "5 Hunting Bolts", "1 Javelin", "Elven Spear", "5gp",
+	"10gp", "20gp", "40gp", "Fishing Net", "Acid Vial", "Bedroll", "Climber's Kit", "Fishing Tackle", 
+	"Worker's Mallet", "Vial of Oil", "3 Sheets of Paper", "Small Gemstone", "Spyglass", "Whetstone",
+	"Torch", "Glass Vial", "Bundle of Twine", "Silver Bracelet", "Hand Mirror", "Old Saddlebag",
+	"Small Copper Ingot", "Small Iron Ingot", "Silver Plate", "Opened Bottle of Brandy", "Sealed Bottle of Wine",
+	"Ancient Coin", "2 Ceramic Jars", "Deck of Cards", "Fine Wolf Pelt", "Tattered Bear Pelt", "Silver Brooch",
+	"Small Pearl", "Ancient Scroll", "Dusty Tapestry", "Pile of Cattle Dung", "Silver Ore", "Small Brass Idol", 
+	"Fine Silver Rapier", "Bird Cage", "Tobacco Cask", "30ft of Rope", "Wicker Basket", "Noble's Shirt"]
+}

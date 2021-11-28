@@ -22,6 +22,7 @@ discordApiToken = os.getenv("API_TOKEN")
 # Constants.
 #-----------------------------------------------------------------
 discordTimeZone = timezone('US/Eastern')
+discordAdminRoles = ["Dungeon Master"]
 #-----------------------------------------------------------------
 
 # Establish console colors.
@@ -92,6 +93,17 @@ def createEmbed(description, username, icon, color, inline, *content):
 def getModifier(score):
     return "+" + str(int(math.floor((score - 10)/2))) if int(math.floor((score - 10)/2)) > 0 else int(math.floor((score - 10)/2))
 #-----------------------------------------------------------------
+def hasAdminAccess(userRoles, allowedRoles): 
+    hasRole = False
+    try:
+        for roles in userRoles:
+            if roles.name in allowedRoles:
+                hasRole = True
+                break
+    except:
+        hasRole = False
+    return hasRole
+#-----------------------------------------------------------------
 ##################################################################
 #-----------------------------------------------------------------
 
@@ -123,7 +135,8 @@ async def on_message(message):
         "messageNick": message.author.nick,
         "messageIcon": message.author.avatar_url,
         "messageRoles": message.author.roles,
-        "messageContent": message.content
+        "messageContent": message.content,
+        "hasAdminAccess": hasAdminAccess(message.author.roles, discordAdminRoles)
     }
     messageAlias = messageDict['messageNick'] if messageDict['messageNick'] is not None else messageDict['messageName']
     #-----------------------------------------------------------------
@@ -151,7 +164,7 @@ async def on_message(message):
     #-----------------------------------------------------------------
     if message.content.startswith('!info'):
         logMessage("called \'!info\'")
-        infoString = ""
+        infoString = "***PLAYER FUNCTIONS***\n"
 
         infoString += "**!roll <quantity> <sides>**\
         \n> __Description__: Returns a list of dice and their sum, based off your input values.\
@@ -177,6 +190,15 @@ async def on_message(message):
         \n> __Description__: Retrieves stats from your JSON file.\
         \n"
 
+        infoString += "\n***DM ONLY FUNCTIONS***\n"
+
+        infoString += "**!loot <quantity> <type>**\
+        \n> __Description__: Returns a random list of items, based off your input values. Only use \"Magic Items\" for very special encounters.\
+        \n> __Type Options__: \"Normal Items\" (type key = \"norm\"), \"Magic Items\" (type key = \"mag\")\
+        \n> __Default__: quantity = 1, type = \"Normal Items\"\
+        \n> __Example__: *\"!loot 4 mag\"* returns 4 random Magic Items\
+        \n"
+
         await message.channel.send(infoString)
 
         return
@@ -186,7 +208,7 @@ async def on_message(message):
         logMessage("called \'!template\'")
 
         try:
-            await message.channel.send("**Character Sheet JSON Template:**\n", file=discord.File("chSheets\\template.json"))
+            await message.channel.send("**Character Sheet JSON Template:**\n", file=discord.File("template.json"))
         except Exception as e:
             logError('\'', e, "\' thrown by \'!template\' call")
 
@@ -310,8 +332,8 @@ async def on_message(message):
                 await message.channel.send(embed = createEmbed(f"**Character Stats:** {charName}\
                 \n\
                 \n**Proficiency Bonus:** {charProf}\
-                \n**Saving Throws:**: {charThro}\
-                \n**Skills:**: {charSkil}\
+                \n**Saving Throws:** {charThro}\
+                \n**Skills:** {charSkil}\
                 \n**Passive Perception:** {charPerc}\
                 \n",
                 messageAlias, messageDict["messageIcon"], 0x4265ed, False, 
@@ -323,6 +345,62 @@ async def on_message(message):
                 await message.channel.send(f"Could __not__ retrieve stats for **{messageAlias}**...")
         else:
             await message.channel.send(f"Could __not__ retrieve stats for **{messageAlias}**...")
+
+        return
+    #-----------------------------------------------------------------
+    if message.content.startswith('!getSpells'):
+        logMessage("called \'!getSpells\'")
+
+        #TODO
+
+        return
+    #-----------------------------------------------------------------
+    if message.content.startswith('!loot') and messageDict["hasAdminAccess"]:
+        messageArr = message.content.split(" ")
+
+        path = Path("loottable.json")
+        exists = path.is_file()
+        quantity = 1
+        type = ""
+
+        try:
+            quantity = int(messageArr[1])
+        except Exception as e:
+            quantity = 1
+            logError('\'', e, "\' thrown by \'!loot\' call on value \'quantity\'")
+
+        try:
+            type = str(messageArr[2])
+            if(type == "norm"):
+                type = "Normal Items"
+            elif(type == "mag"):
+                type = "Magic Items"
+            else:
+                type = "Normal Items"
+        except Exception as e:
+            type = "Normal Items"
+            logError('\'', e, "\' thrown by \'!loot\' call on value \'type\'")
+
+        returnString = ""
+
+        if(exists):
+            try:
+                file = open(path, "r")
+                data = json.loads(file.read())
+                for i in range (1, quantity + 1):
+                    returnString += f"- {data[type][random.randint(1, len(data[type]) - 1)]}\n"
+                    sleep(0.01*random.randint(1, 10))
+            except Exception as e:
+                logError('\'', e, f"\' thrown by \'!loot\' call")
+
+        returnDict = {
+            "title": "Item(s):",
+            "description": returnString
+        }
+
+        logMessage("called \'!loot\'")
+
+        await message.channel.send(embed = createEmbed(f"**Loot Retrieved** - {quantity} of type \'{type}\'", messageAlias, messageDict["messageIcon"], 0xffb957, False, returnDict))
 
         return
     #-----------------------------------------------------------------
