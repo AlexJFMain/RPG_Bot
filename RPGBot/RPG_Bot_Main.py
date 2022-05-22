@@ -23,7 +23,7 @@ discordApiToken = os.getenv("API_TOKEN")
 # Constants.
 #-----------------------------------------------------------------
 discordTimeZone = timezone('US/Eastern')
-discordAdminRoles = ["Dungeon Master"]
+discordAdminRoles = ["Dungeon Master", "admin/mod"]
 #-----------------------------------------------------------------
 
 # Establish console colors.
