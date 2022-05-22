@@ -227,12 +227,12 @@ async def on_message(message):
         try:
             quantity = int(messageArr[1])
         except Exception as e:
-            logError('\'', e, "\' thrown by \'!roll\' call on value \'quantity\'")
+            logMessage("No dice \'quantity\' input")
 
         try:
             sides = int(messageArr[2])
         except Exception as e:
-            logError('\'', e, "\' thrown by \'!roll\' call on value \'sides\'")
+            logMessage("No dice \'sides\' input")
 
         if(quantity < 1 or quantity > 20):
             quantity = 1
@@ -285,6 +285,7 @@ async def on_message(message):
             if('application/json' in messageDict['messageAttachments'][0].content_type):
                 try: 
                     await messageDict['messageAttachments'][0].save(path)
+                    await message.channel.send(f"Character Sheet successfully saved for **{messageAlias}**...")
                 except Exception as e:
                     logError('\'', e, f"\' thrown by \'!setFile\'")
         else:
